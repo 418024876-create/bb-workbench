@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#FFF8F0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="宝宝成长">
+<meta name="description" content="宝宝学习成长工作台：闪卡启蒙、成长记录、每日打卡">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/style.css">
+<title>宝宝成长工作台</title>
+</head>
+<body>
+
+<!-- ============ 首次使用：宝宝档案设置 ============ -->
+<div id="screen-setup" class="screen">
+  <div class="setup-card">
+    <div class="setup-title">👶 欢迎宝宝</div>
+    <p class="setup-sub">先建一个小档案，我们开始学习吧！</p>
+    <div class="avatar-pick" id="avatar-pick"></div>
+    <input type="text" id="inp-name" placeholder="宝宝的小名" maxlength="8" autocomplete="off">
+    <label class="field-label">🎂 出生日期</label>
+    <input type="date" id="inp-birth" max="2025-08-06">
+    <div class="gender-pick">
+      <button data-g="boy" class="g-btn">👦 男宝</button>
+      <button data-g="girl" class="g-btn">👧 女宝</button>
+    </div>
+    <button id="btn-start" class="btn-primary">开始成长之旅 🚀</button>
+  </div>
+</div>
+
+<!-- ============ 主应用 ============ -->
+<div id="app" class="app hidden">
+  <header class="topbar">
+    <div class="top-left">
+      <div id="home-avatar" class="home-avatar">👶</div>
+      <div class="top-info">
+        <div id="home-name" class="home-name">宝宝</div>
+        <div id="home-age" class="home-age">0岁0个月</div>
+      </div>
+    </div>
+    <div class="top-right">
+      <div class="date-chip" id="date-chip">周一</div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- 今日 -->
+    <section id="tab-today" class="tab-page">
+      <div class="hello-card">
+        <div class="hello-emoji" id="hello-emoji">🌞</div>
+        <div class="hello-text">
+          <div class="hello-title" id="hello-title">早上好！</div>
+          <div class="hello-sub" id="hello-sub">今天也要开心学习呀</div>
+        </div>
+      </div>
+
+      <div class="section-title">📋 今日任务</div>
+      <div class="task-list">
+        <div class="task-card" data-task="flash">
+          <div class="task-icon">🃏</div>
+          <div class="task-body">
+            <div class="task-name">闪卡学习</div>
+            <div class="task-sub">10张卡片 · 3分钟</div>
+          </div>
+          <button class="task-btn" id="task-flash-btn">开始</button>
+        </div>
+        <div class="task-card" data-task="song">
+          <div class="task-icon">🎵</div>
+          <div class="task-body">
+            <div class="task-name">唱一首儿歌</div>
+            <div class="task-sub">小星星 · 找朋友</div>
+          </div>
+          <button class="task-btn" id="task-song-btn">播放</button>
+        </div>
+        <div class="task-card" data-task="outdoor">
+          <div class="task-icon">🌳</div>
+          <div class="task-body">
+            <div class="task-name">户外活动</div>
+            <div class="task-sub">晒太阳 · 玩滑梯</div>
+          </div>
+          <button class="task-btn" id="task-outdoor-btn">打卡</button>
+        </div>
+      </div>
+
+      <div class="section-title">🏅 今日之星</div>
+      <div class="star-card">
+        <div class="star-big" id="star-count">⭐ × 0</div>
+        <div class="star-progress"><div class="star-progress-fill" id="star-fill"></div></div>
+        <div class="star-hint" id="star-hint">再学一轮闪卡，攒一颗星！</div>
+      </div>
+
+      <div class="section-title">📊 本周周报</div>
+      <div class="weekly-card">
+        <div class="weekly-stats">
+          <div class="ws"><div class="ws-num" id="wk-days">0</div><div class="ws-label">学习天数</div></div>
+          <div class="ws"><div class="ws-num" id="wk-known">0</div><div class="ws-label">新认识</div></div>
+          <div class="ws"><div class="ws-num" id="wk-stars">0</div><div class="ws-label">星星</div></div>
+        </div>
+        <button class="weekly-btn" id="btn-weekly">查看完整周报 📈</button>
+      </div>
+    </section>
+
+    <!-- 学一学 -->
+    <section id="tab-learn" class="tab-page hidden">
+      <div class="page-title">🎓 学一学</div>
+      <div class="page-sub">点一个分类开始学习</div>
+      <div class="cat-grid" id="cat-grid"></div>
+    </section>
+
+    <!-- 成长 -->
+    <section id="tab-grow" class="tab-page hidden">
+      <div class="page-title">📈 成长记录</div>
+      <div class="grow-summary">
+        <div class="grow-stat"><div class="grow-num" id="grow-milestone-num">0</div><div class="grow-label">里程碑</div></div>
+        <div class="grow-stat"><div class="grow-num" id="grow-known-num">0</div><div class="grow-label">认识卡片</div></div>
+        <div class="grow-stat"><div class="grow-num" id="grow-streak-num">0</div><div class="grow-label">连续打卡</div></div>
+      </div>
+      <div class="section-title">🧗 发育里程碑</div>
+      <div id="milestone-list" class="milestone-list"></div>
+    </section>
+
+    <!-- 我的 -->
+    <section id="tab-me" class="tab-page hidden">
+      <div class="page-title">👤 我的</div>
+      <div class="me-card">
+        <div id="me-avatar" class="me-avatar">👶</div>
+        <div class="me-info">
+          <div class="me-name" id="me-name">宝宝</div>
+          <div class="me-meta" id="me-meta">2岁3个月</div>
+        </div>
+        <button class="me-edit" id="btn-edit-profile">✏️</button>
+      </div>
+
+      <div class="section-title">🏆 勋章墙</div>
+      <div class="badge-wall" id="badge-wall"></div>
+
+      <div class="section-title">🎵 儿歌小屋</div>
+      <div class="song-list" id="song-list"></div>
+
+      <div class="me-actions">
+        <button class="me-action" id="btn-export">📤 导出数据</button>
+        <button class="me-action danger" id="btn-reset">🗑️ 清空数据</button>
+      </div>
+      <div class="me-footer">宝宝成长工作台 v1.0 · 纯本地存储</div>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <button class="tab-btn active" data-tab="today"><span class="tab-icon">🏠</span><span class="tab-label">今天</span></button>
+    <button class="tab-btn" data-tab="learn"><span class="tab-icon">🎓</span><span class="tab-label">学一学</span></button>
+    <button class="tab-btn" data-tab="grow"><span class="tab-icon">📈</span><span class="tab-label">成长</span></button>
+    <button class="tab-btn" data-tab="me"><span class="tab-icon">👤</span><span class="tab-label">我的</span></button>
+  </nav>
+</div>
+
+<!-- ============ 闪卡全屏（宝宝模式，误触锁定） ============ -->
+<div id="screen-flash" class="screen hidden">
+  <div class="flash-top">
+    <div class="flash-cat" id="flash-cat">动物</div>
+    <div class="flash-progress" id="flash-progress">1 / 10</div>
+    <button class="flash-exit" id="flash-exit">🔒 退出</button>
+  </div>
+  <div class="flash-card" id="flash-card">
+    <div class="flash-emoji" id="flash-emoji">🐶</div>
+    <div class="flash-word" id="flash-word">狗</div>
+    <div class="flash-py" id="flash-py">gǒu</div>
+    <div class="flash-dots" id="flash-dots"></div>
+  </div>
+  <div class="flash-actions">
+    <button class="flash-btn no" id="flash-no">🤔 再学学</button>
+    <button class="flash-btn speak" id="flash-speak">🔊</button>
+    <button class="flash-btn yes" id="flash-yes">👍 认识</button>
+  </div>
+  <div class="flash-tip">点击卡片听发音 · 左右滑动换卡片</div>
+</div>
+
+<!-- ============ 儿歌弹层 ============ -->
+<div id="modal-song" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-title" id="song-title">小星星</div>
+    <div class="song-lyrics" id="song-lyrics"></div>
+    <button class="btn-primary" id="song-read">🔊 唱给我听</button>
+    <button class="btn-plain" id="song-close">完成 ✓</button>
+  </div>
+</div>
+
+<!-- ============ 档案编辑弹层（家长） ============ -->
+<div id="modal-profile" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-title">✏️ 编辑档案</div>
+    <div class="avatar-pick small" id="avatar-pick-edit"></div>
+    <input type="text" id="inp-name-edit" placeholder="宝宝的小名" maxlength="8" autocomplete="off">
+    <label class="field-label">🎂 出生日期</label>
+    <input type="date" id="inp-birth-edit">
+    <div class="gender-pick">
+      <button data-g="boy" class="g-btn">👦 男宝</button>
+      <button data-g="girl" class="g-btn">👧 女宝</button>
+    </div>
+    <button class="btn-primary" id="btn-save-profile">保存</button>
+    <button class="btn-plain" id="btn-cancel-profile">取消</button>
+  </div>
+</div>
+
+<!-- ============ 完成庆祝（闪卡一轮/勋章解锁） ============ -->
+<div id="celebrate">
+  <div class="celebrate-box">
+    <div class="celebrate-emoji">⭐</div>
+    <div class="celebrate-text" id="celebrate-text">太棒了！</div>
+    <div class="celebrate-sub" id="celebrate-sub"></div>
+  </div>
+</div>
+
+<!-- ============ Toast ============ -->
+<!-- ============ 周报弹层 ============ -->
+<div id="modal-weekly" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-title">📊 本周学习周报</div>
+    <div class="weekly-date" id="weekly-date">8月3日 ~ 8月9日</div>
+    <div class="weekly-grid">
+      <div class="wg"><div class="wg-num" id="wkm-days">0</div><div class="wg-label">学习天数</div></div>
+      <div class="wg"><div class="wg-num" id="wkm-known">0</div><div class="wg-label">新认识卡片</div></div>
+      <div class="wg"><div class="wg-num" id="wkm-song">0</div><div class="wg-label">儿歌</div></div>
+      <div class="wg"><div class="wg-num" id="wkm-outdoor">0</div><div class="wg-label">户外</div></div>
+      <div class="wg"><div class="wg-num" id="wkm-stars">0</div><div class="wg-label">星星</div></div>
+      <div class="wg"><div class="wg-num" id="wkm-mile">0</div><div class="wg-label">里程碑</div></div>
+    </div>
+    <div class="section-title">🆕 本周新认识（按分类）</div>
+    <div id="weekly-cats" class="weekly-cats"></div>
+    <div class="section-title">📅 本周足迹</div>
+    <div id="weekly-days" class="weekly-days"></div>
+    <button class="btn-plain" id="btn-weekly-close">关闭</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

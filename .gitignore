@@ -1,0 +1,11 @@
+# WorkBuddy 并行生成的另一套代码（未采用，本地保留，不入库）
+.workbuddy/
+assets/
+js/pages/
+js/router.js
+js/storage.js
+js/data/milestones.js
+
+# 系统
+Thumbs.db
+.DS_Store
