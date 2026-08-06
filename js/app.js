@@ -30,6 +30,7 @@ function load() {
 let state = load();
 function save() {
   try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { console.warn('存储写入失败', e); }
+  if (typeof lcAutoSync === 'function') lcAutoSync(); // 云同步防抖钩子
 }
 
 /* ====== 日期工具 ====== */
@@ -685,6 +686,9 @@ function init() {
   renderToday(); renderLearn(); renderGrow(); renderMe();
   checkBadges();
 }
+
+// 云同步合并后全量刷新
+function renderAll() { renderToday(); renderLearn(); renderGrow(); renderMe(); checkBadges(); }
 
 // PWA：注册 Service Worker
 if ('serviceWorker' in navigator) {

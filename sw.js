@@ -1,12 +1,13 @@
 // 宝宝成长工作台 - Service Worker v1.0
 // 缓存优先策略：首装全量缓存，之后离线可用
-const CACHE = 'bb-workbench-v3';
+const CACHE = 'bb-workbench-v4';
 const ASSETS = [
   './',
   './index.html',
   './css/style.css',
   './js/data.js',
   './js/app.js',
+  './js/sync.js',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'

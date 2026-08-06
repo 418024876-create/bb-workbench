@@ -6,6 +6,5 @@ js/router.js
 js/storage.js
 js/data/milestones.js
 
-# 系统
-Thumbs.db
-.DS_Store
+# 云同步数据文件（App 经 GitHub API 写入，git 不得覆盖）
+sync/
