@@ -145,6 +145,7 @@ async function lcSyncInner(manual) {
     await ghPushRemote(payload, remote ? remote.sha : null);
     const now = new Date().toISOString();
     lcSetLastSync(now);
+    lcLastSyncAt = Date.now();
     lcSetStatus('✓ 同步成功 ' + new Date(now).toLocaleTimeString('zh-CN', { hour12: false }));
     lcRenderSyncUI();
     renderAll();
@@ -155,11 +156,13 @@ async function lcSyncInner(manual) {
   }
 }
 
-/* ====== 防抖自动同步 ====== */
+/* ====== 防抖自动同步（带冷却，防循环） ====== */
 let lcTimer = null;
+let lcLastSyncAt = 0;
 function lcAutoSync() {
   const cfg = lcGetConfig();
   if (!cfg || !cfg.token || !lcGetPass()) return;
+  if (Date.now() - lcLastSyncAt < 30000) return; // 刚同步过，冷却期内不调度
   clearTimeout(lcTimer);
   lcTimer = setTimeout(() => lcSyncNow(false), 20000);
 }

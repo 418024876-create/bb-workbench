@@ -491,6 +491,42 @@ function closeSong() {
   renderToday(); renderGrow(); checkBadges();
 }
 
+/* ====== Web Audio 儿歌旋律（音乐盒音色） ====== */
+let melCtx = null;
+function playMelody() {
+  const idx = parseInt($('modal-song').dataset.idx, 10);
+  const song = SONGS[idx];
+  if (!song || !song.melody) { toast('这首歌没有旋律数据'); return; }
+  if (!window.AudioContext && !window.webkitAudioContext) { toast('此设备不支持旋律播放'); return; }
+  const AC = window.AudioContext || window.webkitAudioContext;
+  melCtx = melCtx || new AC();
+  if (melCtx.state === 'suspended') melCtx.resume();
+  const notes = { '1': 261.63, '2': 293.66, '3': 329.63, '4': 349.23, '5': 392.00, '6': 440.00, '7': 493.88 };
+  const t0 = melCtx.currentTime + 0.06;
+  const toks = song.melody.trim().split(/\s+/);
+  let t = 0;
+  toks.forEach(tok => {
+    let note = tok, dur = 0.42;
+    if (tok.endsWith('-')) { note = tok.slice(0, -1); dur = 1.25; }
+    const freq = notes[note];
+    if (freq) {
+      const osc = melCtx.createOscillator();
+      const gain = melCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      const st = t0 + t;
+      gain.gain.setValueAtTime(0.0001, st);
+      gain.gain.exponentialRampToValueAtTime(0.45, st + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, st + dur);
+      osc.connect(gain);
+      gain.connect(melCtx.destination);
+      osc.start(st);
+      osc.stop(st + dur + 0.05);
+    }
+    t += dur + 0.05;
+  });
+}
+
 /* ====== 档案 ====== */
 function renderAvatarPicks() {
   ['avatar-pick', 'avatar-pick-edit'].forEach(id => {
@@ -627,6 +663,7 @@ $('task-outdoor-btn').addEventListener('click', () => {
 
 /* ====== 儿歌弹层按钮 ====== */
 $('song-read').addEventListener('click', singSong);
+$('song-melody').addEventListener('click', playMelody);
 $('song-close').addEventListener('click', closeSong);
 
 /* ====== 闪卡交互 ====== */
